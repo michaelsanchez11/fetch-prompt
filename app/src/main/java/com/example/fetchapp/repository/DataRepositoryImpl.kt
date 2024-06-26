@@ -19,11 +19,7 @@ class DataRepositoryImpl @Inject constructor(
                 data?.let {
                     // filter out null data
                     val filteredData = it.filter { item -> !item.name.isNullOrBlank() }
-
-                    //sort the data by listId and if they're the same id, sort by name
-                    val sortedData = filteredData.sortedWith(compareBy({ it.listId }, { it.name }))
-
-                    return@withContext sortedData
+                    return@withContext filteredData
                 }
             } else {
                 null

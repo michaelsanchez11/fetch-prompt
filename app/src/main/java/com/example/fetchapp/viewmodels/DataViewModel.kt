@@ -23,8 +23,30 @@ class DataViewModel @Inject constructor(
             val networkData = dataRepository.getNetworkData()
 
             if (networkData != null) {
-                _data.value = networkData
+                val filteredData = networkData.filter { !it.name.isNullOrBlank() }
+                val sortedData = sortItemDataList(filteredData)
+                _data.value = sortedData
             }
         }
+    }
+
+    private fun extractLastNumber(name: String): Int? {
+        val words = name.split(" ")
+        val lastWord = words.lastOrNull()
+        return lastWord?.toIntOrNull()
+    }
+
+    /**
+     * Thing to Note: We can identify that the name attribute is simply composed of
+     * "Item " + it.id. Therefore we can change this comparison to simply
+     * return itemList.sortedWith(compareBy({ it.listId }, { it.id }))
+     * and remove the extractLastNumber(name: String) method.
+     *
+     * Per requirements, it said to compare based on name and to be fair names can change,
+     * therefore I am keeping the following implementation as it stays true to the requirements
+     * and prevents any data corruption by assuming id will always be the same as the Item name.
+     */
+    private fun sortItemDataList(itemList: List<ItemData>): List<ItemData> {
+        return itemList.sortedWith(compareBy({ it.listId }, { extractLastNumber(it.name ?: "") ?: Int.MAX_VALUE }))
     }
 }
